@@ -38,12 +38,15 @@ def stop_app():
 def execute():
     cate_trans = CategoryTranslate(application.db)
     rows = cate_trans.getCategories()
-    workbook = xlsxwriter.Workbook('categories.xlsx')
+    workbook = xlsxwriter.Workbook('categories.freeze.xlsx')
     worksheet = workbook.add_worksheet()
     worksheet.write('A1', 'Categories')
-    i = 2
+    # worksheet.freeze_panes(1, 0)
+    worksheet.freeze_panes(1, 1)
+
+    i = 3
     for row in rows:
-        worksheet.write('A'+str(i), row[3])
+        worksheet.write('B'+str(i), row[3])
         i += 1
     workbook.close()
 
