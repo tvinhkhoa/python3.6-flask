@@ -1,4 +1,4 @@
-from pypika import Query, Table, Field
+from pypika import Query, Table, Field, functions as fn
 
 class CategoryTranslate:
 
@@ -6,15 +6,12 @@ class CategoryTranslate:
         self.db = db
 
     def getCategories(self):
-        category_translations = Table('category_translations', 'eg_product')
-        q = Query.from_(category_translations).select(
-            '*'
-        ).where(
-            (category_translations.category_id.isin([2, 3, 4, 5, 6])) &
-            (category_translations.locale == 'th')
+        categories_shadow = Table('categories_shadow')
+        q = Query.from_(categories_shadow).select(
+            fn.Count(categories_shadow.id)
         )
 
-        records = self.db.execute(q)
+        # print(self.db)
+        records = self.db.fetchone(q.get_sql())
+        # self.db.close()
         return records
-        # for row in records:
-        #     print(row)
