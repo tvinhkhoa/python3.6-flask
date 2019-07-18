@@ -11,12 +11,9 @@ from app.models.Categories import CategoryTranslate
 from app.Application import Application
 import xlsxwriter
 from app.libs.SSHTunnel import SSHTunnel
+from app.database.schemas.eg_product import EgProduct
 
 application = Application()
-MYSQL_HOST = os.getenv('DB_MYSQL_HOST', 'localhost')
-MYSQL_POST = os.getenv('DB_MYSQL_PORT', 3306)
-MYSQL_USER = os.getenv('DB_MYSQL_USER', 'admin')
-MYSQL_PASS = os.getenv('DB_MYSQL_PASSWORD', '')
 
 def create_app():
     """Construct the core application."""
@@ -52,26 +49,49 @@ def execute(app):
     # Begin JPM
     tunnelJPM = SSHTunnel()
     tunnelJPM.forwarder(
-        {"host":os.getenv('JPM_SSH_HOST'),"port":os.getenv('JPM_SSH_PORT')},
-        ssh_username=os.getenv('JPM_SSH_USER'),
-        ssh_password=os.getenv('JPM_SSH_PASSWORD'),
-        remote={"bind_address":os.getenv('LOCAL'),"bind_port":os.getenv('JPM_MYSQL_PORT')}
+        {"host":os.getenv('THPM_SSH_HOST'),"port":os.getenv('THPM_SSH_PORT')},
+        ssh_username=os.getenv('THPM_SSH_USER'),
+        ssh_password=os.getenv('THPM_SSH_PASSWORD'),
+        remote={"bind_address":os.getenv('LOCAL'),"bind_port":os.getenv('THPM_MYSQL_PORT')}
     )
 
     try:
         tunnelJPM.start()
         with app.app_context():
             application.db = Connection(
-                os.getenv('LOCAL'),
-                tunnelJPM.get_local_bind_port(),
-                os.getenv('JPM_MYSQL_USER'),
-                os.getenv('JPM_MYSQL_PASSWORD'),
-                dbname='eg_product_shadow'
+                host=os.getenv('LOCAL'),
+                port=tunnelJPM.get_local_bind_port(),
+                user=os.getenv('THPM_MYSQL_USER'),
+                password=os.getenv('THPM_MYSQL_PASSWORD'),
+                dbname=''
             )
-            application.db.connect()
-        cate_trans = CategoryTranslate(application.db)
-        rows = cate_trans.getCategories()
-        application.db.close()
+
+            try:
+                application.db.connect()
+                # cate_trans = CategoryTranslate(application.db)
+                # rows = cate_trans.getCategories()
+
+                egProduct = EgProduct(application.db)
+                #1
+                # rows = egProduct.getTotalProductByType()
+                # 2
+                # rows = egProduct.getTotalBrand()
+                #3
+                # rows = egProduct.getProductTop10Brand()
+                #4
+                # rows = egProduct.getTotalMoto()
+                #5
+                # rows = egProduct.getProductTop10Moto()
+                #6
+                # rows = egProduct.getTotalCategories()
+                #7
+                # rows = egProduct.getTotalProductTop10Cate()
+                #8
+                rows = egProduct.getModelIncorrect()
+
+                print(rows)
+            finally:
+                application.db.closed()
     except Exception as e:
         print("Error connecting SSH", e)
     finally:

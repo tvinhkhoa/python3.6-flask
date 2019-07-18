@@ -23,11 +23,12 @@ class SSHTunnel:
                 (self.host, int(self.port)),
                 ssh_username = self.ssh_username,
                 ssh_password = self.ssh_password,
-                remote_bind_address = (self.bind_address, int(self.bind_port))
+                remote_bind_address = (self.bind_address, int(self.bind_port)),
+                # debug_level='TRACE',
             )
             self.server.start()
             self.is_alive = True
-        except Error as e:
+        except Exception as e:
             print ("Error connecting to SSH", e)
         return
 
