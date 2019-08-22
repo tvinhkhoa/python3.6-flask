@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
+# import pymysql
 from pypika import Query, Table, Field
 
 class Connection:
@@ -49,3 +50,5 @@ class Connection:
             return cursor.fetchall()
         except Error as e:
             print ("Error execute query", query.get_sql())
+
+    # def fetchone(self):
