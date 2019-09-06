@@ -87,7 +87,12 @@ def execute(app):
                 #7
                 # rows = egProduct.getTotalProductTop10Cate()
                 #8
-                rows = egProduct.getModelIncorrect()
+                #rows = egProduct.getModelIncorrect()
+                #9
+                # rows = egProduct.getBrandincorrect()
+                #10
+                # rows = egProduct.getInsertUpdateModel()
+                rows = egProduct.compareShippingPoint()
 
                 print(rows)
             finally:

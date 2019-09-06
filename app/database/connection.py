@@ -106,6 +106,6 @@ class Connection:
             rows = cur.fetchall()
             return rows
         except Exception as e:
-            print ("Error fetch all", query)
+            print ("Error fetch all query => {}. Error: {}".format(query, e))
             return None
 
